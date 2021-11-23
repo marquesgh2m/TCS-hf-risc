@@ -1,0 +1,65 @@
+hardware e software embarcado
+O objetivo dessa atividade é que você se familiarize com o simulador do processador HF-RISCV e o suporte de software para a arquitetura. Na última aula estudamos conceitos sobre hardware e software embarcado. Dessa forma, iremos utilizar como exemplo uma plataforma que permite a avaliação das características e limitações de um processador embarcado integrado em um SoC, software de baixo nível, camada de abstração de hardware (HAL) e uso de ferramentas de compilação / toolchain.
+
+Uma descrição da arquitetura (hardware e software) é apresentada em https://github.com/sjohann81/hf-risc. É sugerido que se faça a leitura da página para um entendimento básico da arquitetura, principalmente com relação à organização, o mapa de memória utilizado e a forma como os periféricos são acessados. Nessa disciplina faremos uso da versão RISC-V do processador.
+
+Para essa prática, é necessário que você configure o ambiente (compilador e simulador) e verifique os exemplos de software. Se a imagem da máquina virtual Linux da disciplina for utilizada, não será necessário configurar o compilador cruzado. 
+
+Para configurar o compilador cruzado:
+
+Acesse o repositório contendo scripts para montagem de diversos compiladores cruzados: $ git clone https://github.com/sjohann81/toolchains/
+Entre no diretório contendo o script para compilação do compilador cruzado para arquitetura RISC-V ($ cd toolchains/riscv)
+Instale as dependências
+$ sudo apt update
+$ sudo apt install flex bison libgmp3-dev libmpfr-dev autoconf texinfo build-essential libncurses5-dev
+Crie um diretório para o build do compilador, copie o script, configure permissão de execução e execute o mesmo:
+$ mkdir build && cd build
+$ cp ../build_riscv32_toolchain_9_3 .
+$ chmod +x build_riscv32_toolchain_9_3
+$ ./build_riscv32_toolchain_9_3
+Se o processo for concluído com sucesso, será possível encontrar o executável riscv32-unknown-elf (entre outros arquivos) no diretório riscv32-unknown-elf/gcc-9.3.0/bin/
+Para instalar o toolchain, copie o diretório contendo as ferramentas para /usr/local e crie um link simbólico:
+$ sudo mv riscv32-unknown-elf /usr/local
+$ cd /usr/local/riscv32-unknown-elf
+$ sudo ln -s gcc-9.3.0 gcc
+Para tornar a configuração permanente, adicione o toolchain à variável de ambiente PATH:
+$ cd ~
+$ echo "export PATH=$PATH:/usr/local/riscv32-unknown-elf/gcc/bin" >> .bashrc
+$ source .bashrc
+Para a atividade a seguir, será necessário clonar o repositório do projeto HF-RISC. Verifique se você possui um compilador cruzado funcional antes do próximo passo ($ riscv32-unknown-elf-gcc -v).
+
+$ git clone https://github.com/sjohann81/hf-risc
+$ cd hf-risc/
+Simulador:
+
+Compile os fontes do simulador do processador HF-RISCV (hf_riscv_sim) com o compilador nativo da máquina local. Isso será necessário na primeira vez que o ambiente for montado. Para isso, faça o seguinte:
+
+$ cd tools/sim/hf_riscv_sim
+$ make
+$ cd ../../../
+O simulador do processador implementa um ISS (instruction set simulator), compatível com a implementação em hardware também disponibilizada no repositório do projeto. O simulador possui precisão em nível de instrução e implementa, além do processador e uma memória SRAM, um conjunto de periféricos e controladores:
+
+Controlador de interrupção e registradores associados (IRQ_VECTOR, IRQ_CAUSE, IRQ_MASK, IRQ_STATUS e IRQ_EPC)
+Interface de depuração
+Mapa de memória para periféricos
+Controle genérico de entrada e saída, incluindo registradores associados (GPIOCAUSE, GPIOCAUSEINV e GPIOMASK)
+Porta de entrada e saída A, e registradores (PADDR, PAOUT, PAIN, PAININV e PAINMASK)
+Controle genérico para timers, incluindo registradores associados (TIMERCAUSE, TIMERCAUSE_INV e TIMERMASK)
+TIMER0 (contador de 32 bits, free running)
+TIMER1 (contador de 16 bits, para oscilador e PWM)
+TIMER1_PRE (prescaler), TIMER1_CTC (clear timer on compare) e TIMER1_OCR (output compare register)
+Controle genérico para UARTs, incluindo registradores associados (UARTCAUSE, UARTCAUSE_INV e UARTMASK)
+UART0
+Software embarcado:
+
+O diretório contendo software e exemplos encontra-se em hf-risc/software. Juntamente com os exemplos (hf-risc/software/app), estão disponíveis um makefile para automatizar o processo de compilação, uma biblioteca C embarcada (hf-risc/software/lib), camada de abstração de hardware (hf-risc/software/lib/riscv) e definições para abstração de hardware (hf-risc/software/lib/hf-risc.h).
+
+Para executar uma aplicação exemplo (no caso hf-risc/software/app/hello.c) é necessário realizar o processo de compilação da mesma e após executar o processo de simulação:
+
+$ cd software
+$ make hello
+Serão criados diversos arquivos, incluindo binários, dumps, mapas e listagem assembly. O arquivo que nos interessa para simulação é code.bin, o qual foi gerado a partir de um arquivo ELF, resultante do processo de compilação/ligação. Para simular, invoca-se o ISS passando como parâmetro o binário que irá ser executado:
+$ ../tools/sim/hf_riscv_sim/hf_riscv_sim code.bin
+Caso a aplicação tenha sido compilada com uma flag de depuração (DEBUG_PORT), é necessário passar como parâmetro adicional um arquivo onde a saída será armazenada:
+
+$ ../tools/sim/hf_riscv_sim/hf_riscv_sim code.bin out.txt
