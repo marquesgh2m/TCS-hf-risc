@@ -29,67 +29,84 @@ void printArray(int arr[], int size)
     printf("\n");
 }
 
+int arr_size = 20;
+int arr[] = {19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 
-int arr[] = {64, 34, 25, 12, 22, 11, 90};
 
-char teste[5] = {'a','e','i','o','u'};
-
-void sabotador(){
+void sabotador(int *aux, int depth){
     int i;
-    int *aux;
-    aux = &bubbleSort;
-    for(i=0;i<=(68/4);i++){
-        //print(&aux)
-        printf("i:%2d *prt:%08x: %08x\n", i, *(&bubbleSort+i*4), *(aux++)); 
-    }
-}
+    int random_depth = random() % depth; // Seleciona um valor entre 0 a N
+    int random_bit = random() % 32;
+    int random_adress = (int)(aux)+random_depth*4;
 
+    printf("RandomAdress(%d): %08x, RandomBit:%d\n", random_depth, random_adress, random_bit);
+    printf("FirstAddress: %08x, depth:%d\n", aux, depth);
 
-// Driver program to test above functions
-int main()
-{
-    printf("teste: %s \n", teste);
-    printf("bubbleSort: %d \n", &bubbleSort);
-    printf("bubbleSort: %x \n", &bubbleSort);
-    printf("bubbleSort: %d \n", &bubbleSort - 1033742184);
-
-    //sabotador();
-
-    int i;
-    int *aux;
-    aux = arr;
-    for(i=0;i<=20;i++){
-        printf("i:%2d *prt:%08x: %d\n", i, aux, *(aux)); 
+    for(i=0;i<depth;i++){
+        if(i==random_depth){
+            printf("i:%2d *adr:%08x: %08x \tdec(%d){Original}\n", i, aux, *aux, *aux);
+            *aux ^= 1UL << random_bit;
+        }
+        printf("i:%2d *adr:%08x: %08x \tdec(%d)\n", i, aux, *aux, *aux); 
         aux++;
     }
 
-    /*
-    int i;
-    int *aux;
-    aux = &bubbleSort;
-    for(i=0;i<=(68/4);i++){
-        //print(&aux)
-        printf("i:%2d *prt:%08x: %08x\n", i, *(&bubbleSort+i*4), *(aux++)); 
-
-    }*/
+}
 
 
-    int endereco = random() % 68;
-    printf("arr: %08x \n", arr);
-    int * ptr = arr;
-    *ptr = 65;
-    printf("ptr: %08x \n", ptr);
-    printf("&(*ptr): %08x \n", &(*ptr));
+// bist_check_s1()
+//      print(falha detectada em s1)
 
-    int * ptr6 = &arr[6];
-    *ptr6 = 65;
-    printf("ptr6: %08x \n", ptr6);
-    printf("*ptr6: %d \n", *ptr6);
+// bist_check_s2()
+//      print(falha detectada em s2)
+
+// bist_check_s3()
+//      print(falha detectada em s3)
+
+// bist_check_s4()
+//      print(falha detectada em s4)
 
 
-    int n = sizeof(arr)/sizeof(arr[0]);
-    bubbleSort(arr, n);
-    printf("Sorted array: \n");
-    printArray(arr, n);
+int main()
+{
+    // bist_check_s1()
+    // bubbleSort()
+
+    // bist_check_s1()
+    // random() % 1? sabotador(&bubbleSort): sabotador(Arr);
+    // bubbleSort()
+
+    // bist_check_s1()
+    // random() % 1? sabotador(&bubbleSort): sabotador(Arr);
+    // bist_check_s2()
+    // bubbleSort()
+
+    // bist_check_s1()
+    // random() % 1? sabotador(&bubbleSort): sabotador(Arr);
+    // bist_check_s2()
+    // bist_check_s3()
+    // bubbleSort()
+
+    // bist_check_s1()
+    // random() % 1? sabotador(&bubbleSort): sabotador(Arr);
+    // bist_check_s2()
+    // bist_check_s3()
+    // bist_check_s4()
+    // bubbleSort()
+
+    // return 0
+
+    // Set random seed
+    srand(42); //srand(time(NULL)); 
+
+    printf("\nbubbleSort adress: %08x \n", &bubbleSort);
+    printf("arr adress: %08x \n", arr);
+    //sabotador(&bubbleSort, (int)((0x400002cc-(int)&bubbleSort)/4));
+    sabotador(arr, arr_size);
+    
+
+    bubbleSort(arr, arr_size);
+    printf("\nSorted array: \n");
+    printArray(arr, arr_size);
     return 0;
 }
