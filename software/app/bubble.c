@@ -53,7 +53,15 @@ int main()
     printf("bubbleSort: %x \n", &bubbleSort);
     printf("bubbleSort: %d \n", &bubbleSort - 1033742184);
 
-    sabotador();
+    //sabotador();
+
+    int i;
+    int *aux;
+    aux = arr;
+    for(i=0;i<=20;i++){
+        printf("i:%2d *prt:%08x: %d\n", i, aux, *(aux)); 
+        aux++;
+    }
 
     /*
     int i;
@@ -67,15 +75,15 @@ int main()
 
 
     int endereco = random() % 68;
-    printf("arr: %d \n", arr);
+    printf("arr: %08x \n", arr);
     int * ptr = arr;
     *ptr = 65;
-    printf("ptr: %d \n", ptr);
-    printf("&(*ptr): %d \n", &(*ptr));
+    printf("ptr: %08x \n", ptr);
+    printf("&(*ptr): %08x \n", &(*ptr));
 
     int * ptr6 = &arr[6];
     *ptr6 = 65;
-    printf("ptr6: %d \n", ptr6);
+    printf("ptr6: %08x \n", ptr6);
     printf("*ptr6: %d \n", *ptr6);
 
 
