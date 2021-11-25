@@ -34,12 +34,37 @@ int arr[] = {64, 34, 25, 12, 22, 11, 90};
 
 char teste[5] = {'a','e','i','o','u'};
 
+void sabotador(){
+    int i;
+    int *aux;
+    aux = &bubbleSort;
+    for(i=0;i<=(68/4);i++){
+        //print(&aux)
+        printf("i:%2d *prt:%08x: %08x\n", i, *(&bubbleSort+i*4), *(aux++)); 
+    }
+}
+
 
 // Driver program to test above functions
 int main()
 {
     printf("teste: %s \n", teste);
+    printf("bubbleSort: %d \n", &bubbleSort);
+    printf("bubbleSort: %x \n", &bubbleSort);
     printf("bubbleSort: %d \n", &bubbleSort - 1033742184);
+
+    sabotador();
+
+    /*
+    int i;
+    int *aux;
+    aux = &bubbleSort;
+    for(i=0;i<=(68/4);i++){
+        //print(&aux)
+        printf("i:%2d *prt:%08x: %08x\n", i, *(&bubbleSort+i*4), *(aux++)); 
+
+    }*/
+
 
     int endereco = random() % 68;
     printf("arr: %d \n", arr);
